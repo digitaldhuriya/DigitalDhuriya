@@ -1,0 +1,121 @@
+.hero {
+    padding: 160px 20px 80px;
+    background: var(--bg-offwhite);
+    text-align: center;
+}
+
+.title {
+    font-size: 56px;
+}
+
+.subtitle {
+    font-size: 20px;
+    color: var(--primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 10px;
+}
+
+.blog {
+    padding: 80px 20px;
+    background: white;
+}
+
+.categories {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.categories span {
+    padding: 10px 20px;
+    background: #f1f5f9;
+    border-radius: 30px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.categories span.active,
+.categories span:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+}
+
+.card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid #f1f5f9;
+    transition: 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+}
+
+.cardImg {
+    height: 200px;
+    background: var(--text-main);
+    background-image: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+.cardContent {
+    padding: 30px;
+}
+
+.category {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.cardContent h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.cardContent p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+.readMore {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+@media (max-width: 991px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
