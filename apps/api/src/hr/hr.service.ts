@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { User, Attendance, Salary, Performance, Prisma } from '@prisma/client';
+import { User, Attendance, Salary, Performance, Prisma } from '@digital-dhuriya/database';
 
 @Injectable()
 export class HrService {

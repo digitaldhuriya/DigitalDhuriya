@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Transaction, Invoice, Prisma } from '@prisma/client';
+import { Transaction, Invoice, Prisma } from '@digital-dhuriya/database';
 
 @Injectable()
 export class FinanceService {

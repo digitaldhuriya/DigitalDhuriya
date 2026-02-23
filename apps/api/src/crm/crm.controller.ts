@@ -3,7 +3,7 @@ import { CrmService } from './crm.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
-import { Role } from '@prisma/client';
+import { Role } from '@digital-dhuriya/database';
 
 @Controller('crm')
 @UseGuards(JwtAuthGuard, RolesGuard)
