@@ -1,0 +1,241 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String
+  role          Role      @default(FREELANCER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  loginLogs     LoginLog[]
+  projects      Project[] @relation("ProjectTeam")
+  leads         Lead[]    @relation("SalesExecutive")
+  performance   Performance[]
+  attendance    Attendance[]
+  salary        Salary?
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  SALES
+  MARKETING
+  HR
+  ACCOUNTS
+  FREELANCER
+}
+
+model LoginLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+}
+
+model Client {
+  id              String          @id @default(cuid())
+  name            String
+  email           String?         @unique
+  phone           String?
+  status          ClientStatus    @default(LEAD)
+  notes           String?
+  projects        Project[]
+  contacts        ClientContact[]
+  payments        ClientPayment[]
+  followups       Followup[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+enum ClientStatus {
+  LEAD
+  PROSPECT
+  ACTIVE
+  COMPLETED
+}
+
+model ClientContact {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id])
+  name      String
+  email     String?
+  phone     String?
+  position  String?
+}
+
+model Project {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  status      ProjectStatus @default(PENDING)
+  deadline    DateTime?
+  clientId    String
+  client      Client    @relation(fields: [clientId], references: [id])
+  team        User[]    @relation("ProjectTeam")
+  tasks       Task[]
+  files       ProjectFile[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum ProjectStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus @default(PENDING)
+  deadline    DateTime?
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  comments    TaskComment[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+model TaskComment {
+  id        String   @id @default(cuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id])
+  authorId  String
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model ProjectFile {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+  name      String
+  url       String
+  createdAt DateTime @default(now())
+}
+
+model Lead {
+  id              String    @id @default(cuid())
+  name            String
+  email           String?
+  phone           String?
+  status          String    @default("NEW")
+  source          String?
+  salesExecutiveId String?
+  salesExecutive  User?     @relation("SalesExecutive", fields: [salesExecutiveId], references: [id])
+  pipelineStage   String?
+  commissions     Commission[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Commission {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id])
+  amount    Float
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  type        TransactionType
+  amount      Float
+  description String?
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+model Invoice {
+  id        String   @id @default(cuid())
+  number    String   @unique
+  clientId  String
+  amount    Float
+  status    String   @default("UNPAID")
+  dueDate   DateTime
+  createdAt DateTime @default(now())
+}
+
+model ClientPayment {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id])
+  amount    Float
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+}
+
+model Followup {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id])
+  content   String
+  date      DateTime
+  createdAt DateTime @default(now())
+}
+
+model Attendance {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  date      DateTime @default(now())
+  status    String   @default("PRESENT")
+}
+
+model Salary {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  amount    Float
+  payouts   Payout[]
+}
+
+model Payout {
+  id        String   @id @default(cuid())
+  salaryId  String
+  salary    Salary   @relation(fields: [salaryId], references: [id])
+  amount    Float
+  date      DateTime @default(now())
+}
+
+model Performance {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  score     Int
+  comments  String?
+  date      DateTime @default(now())
+}
+
+model Campaign {
+  id        String   @id @default(cuid())
+  name      String
+  status    String
+  spend     Float
+  roi       Float?
+  createdAt DateTime @default(now())
+}

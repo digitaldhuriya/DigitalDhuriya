@@ -1,0 +1,23 @@
+{
+    "name": "@digital-dhuriya/database",
+    "version": "1.0.0",
+    "private": true,
+    "main": "./index.js",
+    "types": "./index.d.ts",
+    "scripts": {
+        "db:generate": "prisma generate",
+        "db:push": "prisma db push",
+        "db:seed": "ts-node prisma/seed.ts"
+    },
+    "dependencies": {
+        "@prisma/client": "^6.2.1"
+    },
+    "devDependencies": {
+        "prisma": "^6.2.1",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.0.0"
+    },
+    "prisma": {
+        "seed": "ts-node prisma/seed.ts"
+    }
+}
