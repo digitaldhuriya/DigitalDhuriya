@@ -1,83 +1,93 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import api from '@/lib/api';
+import { FormEvent, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/auth-context';
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const { login } = useAuth();
+  const router = useRouter();
+  const { user, login, isLoading } = useAuth();
+  const [email, setEmail] = useState('admin@digitaldhuriya.com');
+  const [password, setPassword] = useState('Admin@12345');
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const response = await api.post('/auth/login', { email, password });
-            login(response.data.access_token, response.data.user);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Login failed');
-        }
-    };
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.replace('/dashboard');
+    }
+  }, [isLoading, router, user]);
 
-    return (
-        <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 bg-slate-50">
-            <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                <h2 className="mt-10 text-center text-3xl font-bold leading-9 tracking-tight text-slate-900">
-                    Sign in to Business OS
-                </h2>
-            </div>
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError(null);
+    setSubmitting(true);
 
-            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                <form className="space-y-6" onSubmit={handleSubmit}>
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium leading-6 text-slate-900">
-                            Email address
-                        </label>
-                        <div className="mt-2">
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-                            />
-                        </div>
-                    </div>
+    try {
+      await login(email, password);
+      router.replace('/dashboard');
+    } catch (loginError: any) {
+      setError(loginError?.response?.data?.message || 'Unable to login');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-                    <div>
-                        <div className="flex items-center justify-between">
-                            <label htmlFor="password" className="block text-sm font-medium leading-6 text-slate-900">
-                                Password
-                            </label>
-                        </div>
-                        <div className="mt-2">
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-                            />
-                        </div>
-                    </div>
-
-                    {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-
-                    <div>
-                        <button
-                            type="submit"
-                            className="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                        >
-                            Sign in
-                        </button>
-                    </div>
-                </form>
-            </div>
+  return (
+    <div className="flex min-h-screen items-center justify-center p-6">
+      <div className="grid w-full max-w-4xl overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--panel)] shadow-2xl lg:grid-cols-2">
+        <div className="hidden bg-[linear-gradient(135deg,#0a63d8,#08234a)] p-10 text-white lg:block">
+          <p className="text-sm uppercase tracking-[0.2em] text-blue-100">Digital Dhuriya</p>
+          <h1 className="mt-4 font-heading text-4xl font-bold">Business Management OS</h1>
+          <p className="mt-3 max-w-sm text-sm text-blue-100">
+            Run leads, clients, projects, billing, commissions, content, and accounting from one secure dashboard.
+          </p>
         </div>
-    );
+
+        <div className="p-6 sm:p-10">
+          <h2 className="font-heading text-2xl font-bold text-[var(--text)]">Welcome back</h2>
+          <p className="mt-1 text-sm text-[var(--muted)]">Sign in to continue operating Digital Dhuriya.</p>
+
+          <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+            <div>
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+                Password
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
+
+            {error ? (
+              <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                {error}
+              </div>
+            ) : null}
+
+            <button type="submit" className="primary-btn w-full" disabled={submitting}>
+              {submitting ? 'Signing in...' : 'Sign in'}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 }
+

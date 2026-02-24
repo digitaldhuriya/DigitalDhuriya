@@ -1,18 +1,30 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { Role } from '@digital-dhuriya/database';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+
+type JwtPayload = {
+  sub: string;
+  email: string;
+  role: Role;
+};
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor() {
-        super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            ignoreExpiration: false,
-            secretOrKey: process.env.JWT_SECRET || 'secretKey',
-        });
-    }
+  constructor() {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: process.env.JWT_SECRET || 'digital-dhuriya-jwt-secret',
+    });
+  }
 
-    async validate(payload: any) {
-        return { userId: payload.sub, email: payload.email, role: payload.role };
-    }
+  validate(payload: JwtPayload) {
+    return {
+      userId: payload.sub,
+      email: payload.email,
+      role: payload.role,
+    };
+  }
 }
+
